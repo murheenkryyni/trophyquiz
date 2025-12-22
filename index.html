@@ -404,11 +404,7 @@
     </div>
 
     <script>
-        // PASTE YOUR TROPHY DATA HERE
-        // Replace this array with your actual trophy data from trophies-filtered.json
         let TROPHY_DATA = [];
-
-         // Initialize caches when data is loaded
         function initializeCaches() {
             if (TROPHY_DATA.length > 0) {
                 uniqueGames = [...new Set(TROPHY_DATA.map(t => t.game))];
@@ -416,6 +412,7 @@
             }
         }
 
+        let isAnswering = false;
         let gameButtons = [];
         let typeButtons = [];
         let yearButtons = [];
@@ -472,10 +469,7 @@
         let hintUsed = false;
         let answeredSections = { game: false, type: false, year: false };
 
-        TROPHY_DATA.forEach(t => {
-        const img = new Image();
-        img.src = t.image.replace(".png", "?small=1");
-        });
+        //LINE REMOVED
 
         function startQuiz() {
             if (TROPHY_DATA.length < 10) {
@@ -488,7 +482,15 @@
                 initializeCaches();
             }
 
-            currentQuiz = shuffleArray([...TROPHY_DATA]).slice(0, 10);
+            currentQuiz = [];
+            const usedIndices = new Set();
+            while (currentQuiz.length < 10) {
+                const randomIndex = Math.floor(Math.random() * TROPHY_DATA.length);
+                if (!usedIndices.has(randomIndex)) {
+                    usedIndices.add(randomIndex);
+                    currentQuiz.push(TROPHY_DATA[randomIndex]);
+                }
+            }
             currentQuestion = 0;
             score = 0;
 
@@ -553,12 +555,14 @@
 
         function generateGameOptions(correctTrophy) {
             const options = [correctTrophy.game];
+    
+            // OPTIMIZED: Pick random games without filtering the entire array
             const otherGames = uniqueGames.filter(g => g !== correctTrophy.game);
-            
-            // Pick 3 random other games
-            const shuffled = shuffleArray(otherGames);
-            for (let i = 0; i < 3 && i < shuffled.length; i++) {
-                options.push(shuffled[i]);
+    
+            // Pick 3 random games from the pre-filtered list
+            for (let i = 0; i < 3 && otherGames.length > 0; i++) {
+                const randomIndex = Math.floor(Math.random() * otherGames.length);
+                options.push(otherGames.splice(randomIndex, 1)[0]);
             }
 
             return shuffleArray(options);
@@ -601,11 +605,12 @@
         }
 
         function selectAnswer(section, btn, selected, correct) {
-            if (answeredSections[section]) return;
+            if (answeredSections[section] || isAnswering) return;
+            isAnswering = true;
 
             const container = btn.parentElement;
             const allButtons = container.querySelectorAll('.option-btn');
-            
+    
             // Disable all buttons in this section
             allButtons.forEach(b => b.disabled = true);
 
@@ -622,12 +627,27 @@
                 btn.classList.add('incorrect');
                 // Highlight correct answer
                 allButtons.forEach(b => {
-                    const btnText = b.textContent.toLowerCase().trim();
-                    if (btnText === correctStr || btnText.includes(correctStr)) {
-                        b.classList.add('correct');
-                    }
-                });
-            }
+                const btnText = b.textContent.toLowerCase().trim();
+                if (btnText === correctStr || btnText.includes(correctStr)) {
+                b.classList.add('correct');
+                }
+        });
+    }
+
+    document.getElementById('currentScore').textContent = `Current Score: ${score}`;
+
+    // Re-enable answering after animation
+    setTimeout(() => {
+        isAnswering = false;
+    }, 300);
+
+    // Check if all sections answered
+    if (answeredSections.game && answeredSections.type && answeredSections.year) {
+        setTimeout(() => {
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }, 500);
+    }
+}
 
 
 
