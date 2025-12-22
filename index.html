@@ -631,35 +631,23 @@
                 if (btnText === correctStr || btnText.includes(correctStr)) {
                 b.classList.add('correct');
                 }
-        });
-    }
-
-    document.getElementById('currentScore').textContent = `Current Score: ${score}`;
-
-    // Re-enable answering after animation
-    setTimeout(() => {
-        isAnswering = false;
-    }, 300);
-
-    // Check if all sections answered
-    if (answeredSections.game && answeredSections.type && answeredSections.year) {
-        setTimeout(() => {
-            document.getElementById('nextBtn').classList.remove('hidden');
-        }, 500);
-    }
-}
-
-
-
-            document.getElementById('currentScore').textContent = `Current Score: ${score}`;
-
-            // Check if all sections answered
-            if (answeredSections.game && answeredSections.type && answeredSections.year) {
-                setTimeout(() => {
-                    document.getElementById('nextBtn').classList.remove('hidden');
-                }, 500);
-            }
+            });
         }
+
+        document.getElementById('currentScore').textContent = `Current Score: ${score}`;
+
+        // Re-enable answering after animation
+        setTimeout(() => {
+            isAnswering = false;
+        }, 300);
+
+        // Check if all sections answered
+        if (answeredSections.game && answeredSections.type && answeredSections.year) {
+            setTimeout(() => {
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }, 500);
+        }
+    }
 
         function nextQuestion() {
             currentQuestion++;
