@@ -449,7 +449,7 @@
             }
         }
 
-        fetch("trophies-filtered.json")
+        fetch("trophies-filtered.json?v=" + Date.now())
           .then(res => res.json())
           .then(data => {
               TROPHY_DATA = data;
@@ -575,12 +575,24 @@
             // Generate nearby years
             const currentYear = new Date().getFullYear();
             const minYear = 2010;
+
+            // Safety: limit attempts to prevent infinite loop
+            let attempts = 0;
+            const maxAttempts = 50;
             
-            while (options.length < 4) {
+            while (options.length < 4 && attempts < maxAttempts) {
+                attempts++;
                 const offset = Math.floor(Math.random() * 5) - 2; // -2 to +2 years
                 const year = correctYear + offset;
                 if (year >= minYear && year <= currentYear && !options.includes(year)) {
                     options.push(year);
+                }
+            }
+
+            while (options.length < 4) {
+                const fallbackYear = minYear + Math.floor(Math.random() * (currentYear - minYear));
+                if (!options.includes(fallbackYear)) {
+                    options.push(fallbackYear);
                 }
             }
 
