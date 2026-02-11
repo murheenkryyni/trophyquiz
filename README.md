@@ -35,13 +35,6 @@ Progressive Web App (PWA) support:
 - Installable on mobile
 - Offline caching via Service Worker
 
-## 📁 Project Structure
-.
-├── index.html              # Main game UI + logic
-├── trophies-filtered.json  # Trophy dataset
-├── service-worker.js       # Offline caching
-├── manifest.json           # PWA configuration
-
 ## 📦 Trophy Data Format
 
 Each trophy object looks like:
